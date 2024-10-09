@@ -109,6 +109,9 @@ with tabs[2]:
             probability_SM =  st.session_state.get('probability_SM', None)
         st.write('Critical Smart Meters')
         st.write(probability_SM[probability_SM['Failure Probability'] >= 70])
+        with open("feature_importance_plot.html", 'r', encoding='utf-8') as file:
+            html_content = file.read()
+        st.components.v1.html(html_content, width=600, height=400, scrolling=True)
 
 with tabs[3]:
     st.header("Map")

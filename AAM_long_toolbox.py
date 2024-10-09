@@ -234,6 +234,38 @@ def train_xgboost_model(DATA):
         print(f"Directory '{directory}' already exists.")
     # After fitting the model
     dump(bst, 'Model/xgboost_model.joblib')
+    # Extract feature importance
+    importance = bst.get_score(importance_type='weight')
+
+    # Create a DataFrame with feature names and their importance scores
+    importance_df = pd.DataFrame({
+        'Feature': [bst.feature_names_in_[int(k[1:])] for k in importance.keys()],
+        'Importance': importance.values()
+    })
+
+    # Sort the DataFrame by importance values
+    importance_df = importance_df.sort_values(by="Importance", ascending=False)
+
+    # Create a Plotly bar chart
+    fig = go.Figure(go.Bar(
+        x=importance_df['Importance'],
+        y=importance_df['Feature'],
+        orientation='h'
+    ))
+
+    # Customize the layout
+    fig.update_layout(
+        title='Feature Importance in XGBoost Model',
+        xaxis_title='Importance',
+        yaxis_title='Feature',
+        yaxis=dict(autorange="reversed")  # Reverse the y-axis to have the most important feature on top
+    )
+
+    # Export the plot to an HTML file
+    fig.write_html("feature_importance_plot.html")
+
+
+
     return 0
 
 
