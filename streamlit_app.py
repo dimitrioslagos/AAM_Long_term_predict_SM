@@ -110,7 +110,7 @@ with tabs[2]:
         st.write('Critical Smart Meters')
         st.write(probability_SM[probability_SM['Failure Probability'] >= 70])
 
-with tabs[2]:
+with tabs[3]:
     st.header("Map")
     st.write("Upload Substation Topology File")
 
