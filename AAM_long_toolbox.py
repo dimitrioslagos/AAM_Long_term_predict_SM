@@ -36,7 +36,6 @@ def plot_network_with_lf_res(topology,critical_sm):
     m.save("network_map.html")
     return 0
 
-plot_network_with_lf_res(topology)
 
 def weibull_calculation(failure_rate):
     FR = np.array(failure_rate)
