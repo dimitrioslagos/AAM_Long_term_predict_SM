@@ -239,8 +239,8 @@ def train_xgboost_model(DATA):
 
     # Create a DataFrame with feature names and their importance scores
     importance_df = pd.DataFrame({
-        'Feature': [bst.feature_names_in_[int(k[1:])] for k in importance.keys()],
-        'Importance': importance.values()
+        'Feature': bst.feature_names_in_,
+        'Importance': importance
     })
 
     # Sort the DataFrame by importance values
