@@ -134,3 +134,6 @@ with tabs[3]:
         st.write("Upload Topology File in csv.")
     if ('probability_SM' in st.session_state)&('topology' in st.session_state):
         plot_network_with_lf_res(topology, probability_SM[probability_SM['Failure Probability'] >= 70])
+        with open("network_map.html", 'r', encoding='utf-8') as file:
+            html_content = file.read()
+        st.components.v1.html()(html_content, width=1000, height=400, scrolling=True)
