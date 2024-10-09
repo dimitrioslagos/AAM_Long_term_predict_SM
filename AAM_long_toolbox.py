@@ -28,10 +28,13 @@ def plot_network_with_lf_res(topology,critical_sm):
         cr = (critical_sm['Substation']==row.ID).sum()
         name = row.ID + '<br>' + 'Critical Smart Meters N.:' + str(cr)
 
-        popup = folium.Popup(f'<b style="font-size:16px;">{row.ID}</b>', max_width=200)
-
-        folium.Marker(location=[row.geometry.x, row.geometry.y],
-                      popup=popup, icon=folium.Icon(color='green')).add_to(m)
+        popup = folium.Popup(f'<b style="font-size:16px;">{name}</b>', max_width=200)
+        if cr>=1:
+            folium.Marker(location=[row.geometry.x, row.geometry.y],
+                          popup=popup, icon=folium.Icon(color='red')).add_to(m)
+        else:
+            folium.Marker(location=[row.geometry.x, row.geometry.y],
+                          popup=popup, icon=folium.Icon(color='green')).add_to(m)
 
     m.save("network_map.html")
     return 0
