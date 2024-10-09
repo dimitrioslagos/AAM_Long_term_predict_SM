@@ -125,7 +125,7 @@ with tabs[3]:
         else:
             topology_file = st.session_state.get('topology_file', None)
 
-        if ('topology' not in st.session_state)
+        if ('topology' not in st.session_state):
             topology = pd.read_csv('topology_substation.csv',delimiter=';')
             st.session_state['topology'] = topology
         else:

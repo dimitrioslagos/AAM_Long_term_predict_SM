@@ -4,3 +4,6 @@ pandas
 scikit-learn
 plotly
 joblib
+folium
+geopandas
+joblib
