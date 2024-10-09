@@ -102,7 +102,7 @@ with tabs[2]:
         st.write("Please upload a file to see the content.")
 
     if 'uploaded_file2'  in st.session_state:
-        if 'probability_SM' not in st.session_state
+        if 'probability_SM' not in st.session_state:
             probability_SM = make_predictions(DATA, cdfs)
             st.session_state['probability_SM'] = probability_SM
         else:
