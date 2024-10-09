@@ -25,7 +25,7 @@ def plot_network_with_lf_res(topology,critical_sm):
     m = folium.Map(location=[topology.LAT.mean(), topology.LON.mean()], zoom_start=17)
 
     for _, row in gdf_buses.iterrows():
-        cr = (critical_sm['substation']==row.ID).sum()
+        cr = (critical_sm['Substation']==row.ID).sum()
         name = row.ID + '<br>' + 'Critical Smart Meters N.:' + str(cr)
 
         popup = folium.Popup(f'<b style="font-size:16px;">{row.ID}</b>', max_width=200)
