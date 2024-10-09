@@ -10,8 +10,33 @@ from sklearn.preprocessing import LabelEncoder
 import plotly.graph_objects as go
 import os
 from joblib import dump, load
+import geopandas as gpd
+import folium
 
 
+
+def plot_network_with_lf_res(topology,critical_sm):
+    topology.drop(index =topology.index[(topology.LAT.isna())|(topology.LON.isna())],inplace=True)
+    gdf_buses = gpd.GeoDataFrame(topology.ID,
+                                     geometry=gpd.points_from_xy(topology.LAT.values, topology.LON.values),
+                                     crs="EPSG:4326")
+
+    # Initialize a folium map centered around the network's mean coordinates
+    m = folium.Map(location=[topology.LAT.mean(), topology.LON.mean()], zoom_start=17)
+
+    for _, row in gdf_buses.iterrows():
+        cr = (critical_sm['substation']==row.ID).sum()
+        name = row.ID + '<br>' + 'Critical Smart Meters N.:' + str(cr)
+
+        popup = folium.Popup(f'<b style="font-size:16px;">{row.ID}</b>', max_width=200)
+
+        folium.Marker(location=[row.geometry.x, row.geometry.y],
+                      popup=popup, icon=folium.Icon(color='green')).add_to(m)
+
+    m.save("network_map.html")
+    return 0
+
+plot_network_with_lf_res(topology)
 
 def weibull_calculation(failure_rate):
     FR = np.array(failure_rate)

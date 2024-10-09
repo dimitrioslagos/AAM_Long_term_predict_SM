@@ -1,13 +1,13 @@
 import streamlit as st
 import pandas as pd
-from AAM_long_toolbox import generate_curves, create_population_estimations,train_xgboost_model,make_predictions
+from AAM_long_toolbox import plot_network_with_lf_res, generate_curves, create_population_estimations,train_xgboost_model,make_predictions
 import os
 
 # Set the title of the Streamlit app
 st.title("Long Term Asset Management")
 
 # Define the tabs
-tabs = st.tabs(["Historical Data Input","End of Life Curves","Critical Meters Calculation"])
+tabs = st.tabs(["Historical Data Input","End of Life Curves","Critical Meters Calculation","Map"])
 
 # Content for the 'Home' tab
 with tabs[0]:
@@ -102,6 +102,35 @@ with tabs[2]:
         st.write("Please upload a file to see the content.")
 
     if 'uploaded_file2'  in st.session_state:
-        probs = make_predictions(DATA, cdfs)
+        if 'probability_SM' not in st.session_state
+            probability_SM = make_predictions(DATA, cdfs)
+            st.session_state['probability_SM'] = probability_SM
+        else:
+            probability_SM =  st.session_state.get('probability_SM', None)
         st.write('Critical Smart Meters')
-        st.write(probs[probs['Failure Probability'] >= 70])
+        st.write(probability_SM[probability_SM['Failure Probability'] >= 70])
+
+with tabs[2]:
+    st.header("Map")
+    st.write("Upload Substation Topology File")
+
+    # File uploader
+    topology_file = st.file_uploader("Choose a file", type=["csv"],key=3)
+    if topology_file is not None:
+        if 'topology_file' not in st.session_state:
+            if topology_file.name.endswith("csv"):
+                st.session_state['topology_file'] = topology_file.name
+            else:
+                st.write("File is not csv")
+        else:
+            topology_file = st.session_state.get('topology_file', None)
+
+        if ('topology' not in st.session_state)
+            topology = pd.read_csv('topology_substation.csv',delimiter=';')
+            st.session_state['topology'] = topology
+        else:
+            topology = st.session_state.get('topology', None)
+    else:
+        st.write("Upload Topology File in csv.")
+    if ('probability_SM' in st.session_state)&('topology' in st.session_state):
+        plot_network_with_lf_res(topology, probability_SM[probability_SM['Failure Probability'] >= 70])
