@@ -130,7 +130,7 @@ def get_html_plots_EOL(EOL,Data):
             fig = go.Figure(data=[line_plot])
 
             # Update the layout (optional)
-            fig.update_layout(xaxis_title="months", yaxis_title="EoL Probability (%)", xaxis_title="Life (months)")
+            fig.update_layout(xaxis_title="Life (months)", yaxis_title="EoL Probability (%)")
 
             fig.write_html("Plots/EOL/"+model+"_EOL_curve.html")
     return 0

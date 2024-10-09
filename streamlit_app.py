@@ -54,7 +54,7 @@ with tabs[1]:
         if os.path.exists('Plots/EOL/'+str(selected_model)+'_EOL_curve.html'):
             with open('Plots/EOL/'+str(selected_model)+'_EOL_curve.html', 'r', encoding='utf-8') as html_file:
                 plot_html = html_file.read()
-            st.components.v1.html(plot_html, height=400)
+            st.components.v1.html(plot_html, height=600)
         else:
             st.write("Limited failure numbers recorded")
     else:
