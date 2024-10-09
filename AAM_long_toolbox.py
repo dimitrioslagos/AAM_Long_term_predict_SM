@@ -235,7 +235,7 @@ def train_xgboost_model(DATA):
     # After fitting the model
     dump(bst, 'Model/xgboost_model.joblib')
     # Extract feature importance
-    importance = bst.get_score(importance_type='weight')
+    importance = bst.feature_importances_
 
     # Create a DataFrame with feature names and their importance scores
     importance_df = pd.DataFrame({
