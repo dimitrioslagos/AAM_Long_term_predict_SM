@@ -257,7 +257,6 @@ def train_xgboost_model(DATA):
     fig.update_layout(
         title='Feature Importance in XGBoost Model',
         xaxis_title='Importance',
-        yaxis_title='Feature',
         yaxis=dict(autorange="reversed")  # Reverse the y-axis to have the most important feature on top
     )
 
