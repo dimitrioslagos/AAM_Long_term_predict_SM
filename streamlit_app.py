@@ -96,8 +96,8 @@ with tabs[2]:
         else:
             # If file is already uploaded, display the previous result from session state
             DATA = st.session_state.get('DATA', None)
-            st.write("File content as DataFrame:")
-            st.write(DATA)
+            #st.write("File content as DataFrame:")
+            #st.write(DATA)
     else:
         st.write("Please upload a file to see the content.")
 
