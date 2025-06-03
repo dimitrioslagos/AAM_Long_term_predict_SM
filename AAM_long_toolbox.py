@@ -5,7 +5,7 @@ from sklearn.metrics import accuracy_score, confusion_matrix
 from datetime import datetime
 import numpy as np
 from scipy.optimize import curve_fit
-from scipy.stats import norm, gamma
+from scipy.stats import norm, gamma, weibull_min
 from sklearn.preprocessing import LabelEncoder
 import plotly.graph_objects as go
 import os
@@ -42,11 +42,14 @@ def plot_network_with_lf_res(topology,critical_sm):
 
 def weibull_calculation(failure_rate):
     FR = np.array(failure_rate)
+
     # Fit the Weibull CDF to the data
     params, covariance = curve_fit(weibull_cdf, FR[:,0], FR[:,1],p0=[1,12*10])
 
     # Extract the estimated parameters
     shape_est, scale_est = params
+
+    print(scale_est, shape_est)
     return scale_est, shape_est
 
 def weibull_cdf(x, k, lambd):
@@ -100,6 +103,30 @@ def prepare_input_for_EOL_curve(Meter_historic):
     Meter_data = Meter_data[Meter_data["life_duration"] >= 0]
     return Meter_data
 
+
+def model_comparison(EOL,Meter_data):
+    smart_meter_comparison = pd.DataFrame(index = Meter_data.model.unique(),columns = ['Time to reach 10% failure rate (years)'])
+    for model in Meter_data.model.unique():
+        month = 1
+        if (len(EOL[model]['params'])!=0)&(Meter_data[(Meter_data.model==model)&(Meter_data.status=='Fault')].shape[0]>=0.05*Meter_data[(Meter_data.model==model)].shape[0]):
+            while True:
+                if EOL[model]['distribution'] == 'weibull':
+                    lamda = EOL[model]['params']['l']
+                    k = EOL[model]['params']['k']
+                    y = weibull_cdf(month, k, lamda)
+                if EOL[model]['distribution'] == 'normal':
+                    m = EOL[model]['params']['m']
+                    s = EOL[model]['params']['s']
+                    y = normal_cdf(month, m, s)
+                if y<0.1:
+                    month=month+1
+                if y>0.1:
+                    break
+            smart_meter_comparison.loc[model,'Time to reach 10% failure rate (years)'] = month/12
+    smart_meter_comparison.index.name = 'Model'
+    smart_meter_comparison.dropna(inplace=True)
+    smart_meter_comparison = smart_meter_comparison.sort_values(by="Time to reach 10% failure rate (years)",ascending=False)
+    return smart_meter_comparison
 def EOL_curve_fit(input_data):
     dict_cdf_params={}
     input_data.loc[:,"model"] = input_data["model"] +'_'+ input_data["brand"]
@@ -141,15 +168,20 @@ def get_html_plots_EOL(EOL,Data):
     for model in EOL.keys():
         if (len(EOL[model]['params'])!=0)&(Data[(Data.model==model)&(Data.status=='ok')].shape[0]>=1):
             max_life = 12*15
-            if EOL[model]['distribution'] == 'weibull':
-                lamda = EOL[model]['params']['l']
-                k = EOL[model]['params']['k']
-                y = weibull_cdf(range(0,max_life), k, lamda)
-            if EOL[model]['distribution'] == 'normal':
-                m = EOL[model]['params']['m']
-                s = EOL[model]['params']['s']
-                y = normal_cdf(range(0,max_life), m, s)
-
+            while True:
+                print(model,max_life)
+                if EOL[model]['distribution'] == 'weibull':
+                    lamda = EOL[model]['params']['l']
+                    k = EOL[model]['params']['k']
+                    y = weibull_cdf(range(0,max_life), k, lamda)
+                if EOL[model]['distribution'] == 'normal':
+                    m = EOL[model]['params']['m']
+                    s = EOL[model]['params']['s']
+                    y = normal_cdf(range(0,max_life), m, s)
+                if (y[-1]<0.8)&(max_life<=30*12):
+                    max_life = max_life+12
+                else:
+                    break
             line_plot = go.Scatter(x=list(range(max_life)), y=y*100, mode='lines')
 
 
